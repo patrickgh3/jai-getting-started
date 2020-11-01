@@ -1,6 +1,9 @@
 Hopefully this is a useful document for getting started using the language in its curent state.
 Additions, improvements, and suggestions welcome! :)
 
+Last updated 2020-11-01
+Written 2020-10-31
+
 
 
 # Beta info
@@ -63,10 +66,17 @@ Debuggers:
 You can use a debugger with an exe and the generated .pdb file.
 For example, in Visual Studio, open the .exe file and you can set breakpoints and run.
 
-Crashes:
-If your program crashes, as of the time of this writing, the program will
-just stop, and nothing will be printed to stdout. This is good to be aware of
-since it can be confusing. You can use a debugger to see the error, stack trace, etc.
+Crashes and the Debug module:
+If your program crashes, as of the time of this writing, the program will stop
+and nothing will be printed out.
+You can use the Debug module to print the stack trace on crashes:
+#import "Basic";
+Debug :: #import "Debug";
+main :: () {
+    Debug.init();
+    free(cast(*void) 10000000000); // Attempt to cause a crash
+    print("done\n");
+}
 
 Resizable arrays:
 Functions for manipulating resizable arrays are in modules/Basic/Array.jai.
@@ -198,7 +208,7 @@ Entity :: struct {
 Snake :: struct {
     // This makes the Snake struct contain an Entity.
     // It is convenient to make this the first thing in the struct, so that we can treat a pointer to this as an Entity.
-    // The "using" keyword is a convenience to let us access it as snake.x instead of snake.base.x.
+    // The "using" keyword is a convenience to let us access things as snake.x instead of snake.base.x.
     using base: Entity;
     snake_color: int;
 }
@@ -248,6 +258,5 @@ some_function :: () {
     state = .MEMBER_B;
 }
 
---- syntax:
-This means the variable will be uniitialized. As in:
+--- syntax means the variable will be uniitialized. As in:
 variable_c: Vector3 = ---;
