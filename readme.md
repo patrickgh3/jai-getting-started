@@ -254,7 +254,9 @@ This is also described in the types how\_to.
             }
         }
     }
+
     free(cool_snake);
+    array_free(entities);
 
 Anonymous struct variable, a useful grouping for data that only has one copy:
 
