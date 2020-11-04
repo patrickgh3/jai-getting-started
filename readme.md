@@ -1,7 +1,7 @@
 Hopefully this is a useful document for getting started using the language in its curent state.
 Additions, improvements, and suggestions welcome! :)
 
-Last updated 2020-11-01
+Last updated 2020-11-03
 
 Written 2020-10-31
 
@@ -19,12 +19,12 @@ Feel free to ask for help / ask questions in the beta chat room!
 # Getting started
 Things to read:
 * README.txt (obviously)
-* how_to (obviously)
+* how\_to (obviously)
 * Read module names to get a sense of what's available
 * List of community-made libraries and tools: https://github.com/smari/awesome-jai
 
 Searching for stuff (function names, module names, etc.) in the provided code
-(modules, examples, and how_to) is a common flow - to find example code,
+(modules, examples, and how\_to) is a common flow - to find example code,
 and generally figure out how things work.
 Grep variant tools are useful for this, such as:
 * ripgrep - https://github.com/BurntSushi/ripgrep
@@ -32,7 +32,7 @@ Grep variant tools are useful for this, such as:
 
 To discover functionality, the main flow is to browse the source code of
 modules and read their comments and function names. (And function bodies if you want!)
-The exmples/ folder found in some modules can be helpful.
+The examples/ folder found in some modules can be helpful.
 
 Modules I especially recommend looking at:
 * Basic
@@ -40,7 +40,7 @@ Modules I especially recommend looking at:
 * Hash_Table
 * Math
 * File
-* Compiler
+* Compiler - notably, Build_Options
 
 A directory structure that some people use is:
 
@@ -60,8 +60,8 @@ To update the compiler, just replace the jai/ folder.
 
 # General
 
-This section is intended to be read after the howtos.
-These are things that are not yet explicitly covered in the howtos or readme
+This section is intended to be read after the how\_to.
+These are things that are not yet explicitly covered in the how\_to or readme
 as of the time of this writing:
 
 Debuggers:
@@ -100,14 +100,14 @@ Pointer operators:
     variable_b = *variable_a;  // address-of operator (not official name)
     variable_a = <<variable_b; // dereference operator (not official name)
 
-Memory management basics:
-Search the modules/ and examples/ folders for example usage.
-These are all defined in modules/Basic/module.jai:
-
-    New         Allocate and initialize memory for the given type. e.g. to allocate a new struct, use this.
-    NewArray    Allocate and initialize memory for an array of the given type.
-    alloc       Allocate memory
-    free        Free memory
+Custom modules:
+(Note that module importing may be getting reworked sometime.)
+If you have e.g. downloaded or written some code, and you want to
+import it as a module with its own namespace like Cool\_Module :: #import "Cool\_Module"; then:
+* Put all the code in a folder named Cool\_Module, and ensure there is a module.jai which either
+contains the code directly, or uses #load to load all of it.
+* Be sure that folder is picked up by the compiler,
+using Compiler.Build_Options.modules_search_path_array, as shown later in this document.
 
 Compiler directives:
 This list is very rough, may miss some important ones, and descriptions are just rudimentary.
@@ -171,29 +171,33 @@ Search the modules/ and examples/ folders for example usage.
 Example compile_me.jai:
 Based on modules/Compiler/examples/compile_me.jai
 and examples/snake/first.jai
+You may want to read those files as well, since they contain
+more comments and detail.
 
     Compiler :: #import "Compiler";
 
-    #run build();
+    #run {
+        set_working_directory(#filepath);
 
-    build :: () {
-        opts := Compiler.get_build_options();
+        // Don't produce output for this default workspace
+        opts := get_build_options();
         opts.output_type = .NO_OUTPUT;
-        Compiler.set_build_options(opts);
+        set_build_options(opts);
 
+        // Start a new workspace for the actual program
+        w := compiler_create_workspace("");
         opts.output_type = .EXECUTABLE;
         opts.output_executable_name = "executable_name";
+        opts.shorten_filenames_in_error_messages = true;
         array_add(*opts.modules_search_path_array, "../jai_modules"); // This assumes folders are laid out as mentioned earlier
-        // See modules/Compiler for more build options
+        set_build_options(opts, w);
+        add_build_file("code/main.jai", w); // main.jai should contain a function named "main"
 
-        ws := Compiler.compiler_create_workspace("");
-        Compiler.set_build_options(opts, ws);
-        Compiler.add_build_file("main.jai", ws);
-        // main.jai should contain a function named "main".
+        // See modules/Compiler for more build options
 
         // If "run" is supplied as a compiler command line argument, like
         //   jai compile_me.jai -- run
-        // then run the game immediately, as a convenience.
+        // then run the program immediately, as a convenience.
         args := Compiler.compiler_get_command_line_arguments();
         for args {
             if (it == "run") {
@@ -201,10 +205,15 @@ and examples/snake/first.jai
                 break;
             }
         }
+
+        // Personally, for one project which cannot be run at compile-time this way
+        // due to depending on a static library, I have a batch file called run.bat
+        // which runs the compiler and then runs the executable if the compiler
+        // returned a successful exit code
     }
 
 Struct "using base" syntax:
-This is also described in the types how_to.
+This is also described in the types how\_to.
 
     Entity :: struct {
         type: Type; // A Type variable is a convenient way to keep track of what "sub-type" entities are. This could also be an enum.
