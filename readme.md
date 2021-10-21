@@ -4,7 +4,7 @@ The distributed README.txt and the core programs in the how_to/ folder should be
 
 Also check out the [Jai-Community-Library wiki](https://github.com/Jai-Community/Jai-Community-Library/wiki).
 
-Last updated 2021-04-19
+Last updated 2021-10-21
 
 
 
@@ -56,7 +56,7 @@ You can organize your directories however you like. One format some people use i
 ## Debugging
 
 You can use a debugger with an exe and the generated .pdb file.
-For example, in Visual Studio, open the .exe file, and you can set breakpoints and run.
+For example, in Visual Studio, open the .exe file using File -> Open -> Projects/Solution, and you can set breakpoints and run.
 
 ## Crashes
 
