@@ -133,7 +133,7 @@ This is also described in the types how\_to.
     }
 
     Player :: struct {
-        using base: Entity;
+        using #as base: Entity;
         player_index: int;
     }
 
